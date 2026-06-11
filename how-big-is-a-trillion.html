@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How big is a trillion, really?</title>
+<meta name="description" content="An interactive scale exercise: counting time, bill-stack height, spend-down years, and interest per second for any amount from $1 million to $38 trillion.">
+<style>
+  :root{
+    --bg:#0C1626;
+    --panel:#14233D;
+    --panel-edge:#22365A;
+    --ink:#E9EDF5;
+    --slate:#9FB3D1;
+    --slate-dim:#6E82A6;
+    --amber:#F2A33C;
+    --amber-soft:#FAC775;
+    --navy-bar:#2C4570;
+    --track:rgba(159,179,209,0.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important}}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:Calibri,'Segoe UI',system-ui,-apple-system,sans-serif;
+    font-size:17px;
+    line-height:1.6;
+    min-height:100vh;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:56px 24px 40px}
+  .eyebrow{
+    font-size:13px;letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--amber);margin-bottom:14px;
+  }
+  h1{
+    font-family:Georgia,'Times New Roman',serif;
+    font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.15;
+    margin-bottom:12px;
+  }
+  .lede{color:var(--slate);max-width:620px;margin-bottom:40px}
+  .presets{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+  .presets button{
+    background:transparent;color:var(--slate);
+    border:1px solid var(--panel-edge);border-radius:8px;
+    font:inherit;font-size:14px;padding:8px 14px;cursor:pointer;
+    transition:color .15s,border-color .15s,background .15s;
+  }
+  .presets button:hover{color:var(--ink);border-color:var(--slate-dim)}
+  .presets button.on{color:var(--amber-soft);border-color:var(--amber);background:rgba(242,163,60,0.08)}
+  .presets button:focus-visible,input[type=range]:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .slider-row{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+  .slider-row label{font-size:14px;color:var(--slate);white-space:nowrap}
+  input[type=range]{
+    flex:1;appearance:none;-webkit-appearance:none;height:4px;border-radius:2px;
+    background:var(--track);cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    appearance:none;-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:var(--amber);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--amber);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;
+    background:var(--amber);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--amber);
+  }
+  .readout{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:44px}
+  .readout .big{
+    font-family:Georgia,serif;font-size:clamp(30px,5vw,44px);color:var(--amber-soft);
+  }
+  .readout .exact{font-size:14px;color:var(--slate-dim)}
+  .section-label{
+    font-size:13px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--slate);margin-bottom:14px;
+  }
+  .scale{margin-bottom:8px}
+  .scale-row{display:grid;grid-template-columns:108px minmax(0,1fr);gap:10px 14px;align-items:center;margin-bottom:10px}
+  .scale-row .lab{font-size:13px;color:var(--slate)}
+  .scale-track{background:var(--track);border-radius:4px;height:24px;overflow:hidden}
+  .scale-bar{height:24px;border-radius:4px;transition:width .35s ease}
+  .bar-ref{background:var(--navy-bar);width:100%}
+  .bar-amt{background:var(--amber)}
+  .scale-note{font-size:13px;color:var(--slate-dim);min-height:22px;margin-bottom:40px}
+  .cards{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:14px;margin-bottom:44px;
+  }
+  .card{
+    background:var(--panel);border:1px solid var(--panel-edge);
+    border-radius:12px;padding:20px 22px;
+  }
+  .card .lab{font-size:13px;color:var(--slate);margin-bottom:8px}
+  .card .val{
+    font-family:Georgia,serif;font-size:26px;color:var(--amber-soft);line-height:1.2;
+    margin-bottom:8px;
+  }
+  .card .sub{font-size:13.5px;color:var(--slate-dim);line-height:1.5}
+  .notes{
+    border-top:1px solid var(--panel-edge);padding-top:22px;
+    font-size:13.5px;color:var(--slate-dim);max-width:680px;
+  }
+  .notes p{margin-bottom:8px}
+  footer{
+    max-width:880px;margin:0 auto;padding:0 24px 48px;
+    font-size:13px;color:var(--slate-dim);
+  }
+  @media (max-width:560px){
+    .scale-row{grid-template-columns:1fr}
+    .scale-row .lab{margin-bottom:-4px}
+    .slider-row{flex-direction:column;align-items:stretch;gap:8px}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="eyebrow">A scale exercise in twelve zeros</p>
+  <h1>How big is a trillion, really?</h1>
+  <p class="lede">Your intuition handles millions just fine. It quietly fails somewhere around a billion &mdash; and a trillion is a thousand of those. Pick an amount and see what it actually means.</p>
+
+  <div class="presets" role="group" aria-label="Preset amounts">
+    <button type="button" data-v="1e6">$1 million</button>
+    <button type="button" data-v="1e9">$1 billion</button>
+    <button type="button" data-v="1e12">$1 trillion</button>
+    <button type="button" data-v="7e12">US federal budget (~$7T)</button>
+    <button type="button" data-v="38e12">US national debt (~$38T)</button>
+  </div>
+
+  <div class="slider-row">
+    <label for="lg">Amount</label>
+    <input type="range" id="lg" min="6" max="13.6" step="0.01" value="12" aria-label="Dollar amount, logarithmic scale from one million to forty trillion">
+  </div>
+
+  <div class="readout">
+    <span class="big" id="big">$1 trillion</span>
+    <span class="exact" id="exact">$1,000,000,000,000</span>
+  </div>
+
+  <p class="section-label">Drawn to scale</p>
+  <div class="scale">
+    <div class="scale-row">
+      <span class="lab" id="refLab">$1 trillion</span>
+      <div class="scale-track"><div class="scale-bar bar-ref" id="refBar"></div></div>
+    </div>
+    <div class="scale-row">
+      <span class="lab" id="amtLab">Your amount</span>
+      <div class="scale-track"><div class="scale-bar bar-amt" id="amtBar"></div></div>
+    </div>
+  </div>
+  <p class="scale-note" id="scaleNote"></p>
+
+  <div class="cards">
+    <div class="card">
+      <p class="lab">Counting it at $1 per second</p>
+      <p class="val" id="cv1">&mdash;</p>
+      <p class="sub" id="cs1"></p>
+    </div>
+    <div class="card">
+      <p class="lab">Stacked in $100 bills</p>
+      <p class="val" id="cv2">&mdash;</p>
+      <p class="sub" id="cs2"></p>
+    </div>
+    <div class="card">
+      <p class="lab">Spending $1 million per day</p>
+      <p class="val" id="cv3">&mdash;</p>
+      <p class="sub" id="cs3"></p>
+    </div>
+    <div class="card">
+      <p class="lab">Interest at 5% APY</p>
+      <p class="val" id="cv4">&mdash;</p>
+      <p class="sub" id="cs4"></p>
+    </div>
+  </div>
+
+  <div class="notes">
+    <p class="section-label" style="margin-bottom:10px">Assumptions</p>
+    <p>A US $100 bill is 0.0043 inches thick. A year is 365.25 days. Interest is simple annual yield divided into seconds &mdash; no compounding, no taxes, no judgment. Counting assumes one dollar per second with no sleep, which is roughly how month-end close feels anyway.</p>
+  </div>
+</main>
+
+<footer>
+  &copy; 2026 DeWayne Searcy &middot; A 12 to KNOW scale exercise
+</footer>
+
+<script>
+(function(){
+  var SY = 31557600;
+  var BILL_IN = 0.0043;
+  var slider = document.getElementById('lg');
+  var buttons = document.querySelectorAll('.presets button');
+
+  function cf(x, d){
+    return x.toLocaleString(undefined, {maximumFractionDigits: d});
+  }
+  function fmtBig(v){
+    if(v >= 1e12) return '$' + cf(v/1e12, 2) + ' trillion';
+    if(v >= 1e9)  return '$' + cf(v/1e9, 2) + ' billion';
+    if(v >= 1e6)  return '$' + cf(v/1e6, 2) + ' million';
+    return '$' + cf(v, 0);
+  }
+  function el(id){ return document.getElementById(id); }
+
+  function update(a){
+    var m = Math.floor(Math.log10(a));
+    var amt = Math.round(a / Math.pow(10, m-2)) * Math.pow(10, m-2);
+
+    el('big').textContent = fmtBig(amt);
+    el('exact').textContent = '$' + cf(Math.round(amt), 0);
+
+    buttons.forEach(function(b){
+      var v = Number(b.getAttribute('data-v'));
+      b.classList.toggle('on', Math.abs(amt - v)/v < 0.01);
+    });
+
+    var s = amt, c1, s1;
+    if(s < 86400){
+      c1 = cf(s/3600, 1) + ' hours';
+      s1 = 'No breaks, no sleep.';
+    } else if(s < SY){
+      c1 = cf(s/86400, 1) + ' days';
+      s1 = 'Counting nonstop, around the clock.';
+    } else {
+      var y = s/SY;
+      c1 = (y < 10 ? cf(y, 1) : cf(Math.round(y), 0)) + ' years';
+      s1 = 'Start today; finish around the year ' + cf(Math.round(2026 + y), 0) + '.';
+    }
+    el('cv1').textContent = c1; el('cs1').textContent = s1;
+
+    var ft = (amt/100) * BILL_IN / 12, mi = ft/5280, c2, s2;
+    c2 = mi >= 1
+      ? cf(mi >= 10 ? Math.round(mi) : mi, 1) + ' miles tall'
+      : cf(Math.round(ft), 0) + ' feet tall';
+    if(ft < 6)            s2 = 'Somewhere between desk height and head height.';
+    else if(ft < 555)     s2 = 'Still shorter than the Washington Monument (555 ft).';
+    else if(ft < 2717)    s2 = 'Approaching Burj Khalifa territory (2,717 ft).';
+    else if(mi < 6.6)     s2 = 'Taller than any building on Earth, climbing toward cruising altitude.';
+    else if(mi < 62)      s2 = 'Above airliner cruising altitude (6.6 mi).';
+    else if(mi < 250)     s2 = 'Past the K\u00E1rm\u00E1n line \u2014 officially in space.';
+    else if(mi < 1400)    s2 = 'Past the International Space Station (~250 mi up).';
+    else                  s2 = 'Deep into satellite orbit territory.';
+    el('cv2').textContent = c2; el('cs2').textContent = s2;
+
+    var d = amt/1e6, c3, s3;
+    if(d < 1){
+      c3 = 'Gone today'; s3 = 'Spent before dinner.';
+    } else if(d < 365){
+      c3 = cf(Math.round(d), 0) + ' days';
+      s3 = 'Back to budgeting by ' + (d < 32 ? 'next month.' : 'next year.');
+    } else {
+      var y2 = d/365.25;
+      c3 = (y2 < 10 ? cf(y2, 1) : cf(Math.round(y2), 0)) + ' years';
+      var st = 2026 - y2;
+      s3 = st >= 1
+        ? 'You would have started spending in the year ' + cf(Math.round(st), 0) + '.'
+        : 'You would have started spending around ' + cf(Math.round(1 - st), 0) + ' BC.';
+    }
+    el('cv3').textContent = c3; el('cs3').textContent = s3;
+
+    var ips = amt * 0.05 / SY;
+    el('cv4').textContent = '$' + (ips < 100 ? cf(ips, 2) : cf(Math.round(ips), 0)) + ' per second';
+    el('cs4').textContent = 'About $' + cf(Math.round(amt * 0.05 / 365.25), 0) + ' of interest per day.';
+
+    var ref = 1e12, pct;
+    if(amt <= ref){
+      el('refLab').textContent = '$1 trillion';
+      el('amtLab').textContent = 'Your amount';
+      pct = amt/ref * 100;
+    } else {
+      el('refLab').textContent = 'Your amount';
+      el('amtLab').textContent = '$1 trillion';
+      pct = ref/amt * 100;
+    }
+    el('refBar').style.width = '100%';
+    el('amtBar').style.width = Math.max(pct, 0.18) + '%';
+
+    var trackPx = el('amtBar').parentElement.clientWidth || 700;
+    var px = pct/100 * trackPx;
+    var note = el('scaleNote');
+    if(px < 0.75)      note.textContent = 'The smaller bar is thinner than one pixel \u2014 drawn as a hairline so you can find it at all.';
+    else if(px < 6)    note.textContent = 'That sliver on the second bar is real. That is the whole comparison.';
+    else               note.textContent = '';
+  }
+
+  slider.addEventListener('input', function(){
+    update(Math.pow(10, parseFloat(slider.value)));
+  });
+
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){
+      var v = Number(b.getAttribute('data-v'));
+      slider.value = Math.log10(v);
+      update(v);
+    });
+  });
+
+  update(1e12);
+})();
+</script>
+</body>
+</html>
